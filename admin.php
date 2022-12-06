@@ -54,7 +54,10 @@ if (!isset($_SESSION['user_data'])) {
         <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <input class="form-control form-control-dark w-100" type="text" placeholder="Search user by email" aria-label="Search">
+        <input class="form-control form-control-dark w-100" type="email" placeholder="Search user by email" aria-label="Search" id="txtSearch">
+        <button type="button" class="btn btn-success" id="btnSearch">
+            <i class="fa fa-search fa-flip-horizontal fa-lg"></i>
+        </button>
         <div class="navbar-nav">
             <div class="nav-item text-nowrap">
                 <a class="nav-link px-3" href="./scripts/logout.php ">Sign out</a>
@@ -85,8 +88,8 @@ if (!isset($_SESSION['user_data'])) {
                             <div class="card-header">
                                 My Application User Profiles
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-primary">
+                            <div class="table-responsive text-center">
+                                <table class="table table-striped table-hover table-bordered">
                                     <thead>
                                         <tr>
                                             <th scope="col">username</th>
@@ -95,10 +98,7 @@ if (!isset($_SESSION['user_data'])) {
                                             <th scope="col">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <span id="user-list"></span>
-                                        
-                                    </tbody>
+                                    <span id="user-list"></span>
                                 </table>
                             </div>
                         </div>
@@ -126,14 +126,46 @@ if (!isset($_SESSION['user_data'])) {
                     getUser: 1
                 },
                 success: function(response) {
-                    if (response != 0) {
-                        $('#user-list').html(response);
-                    } else {
-                        alert('')
-                    }
+                    $('#user-list').html(response);
                 }
             });
         }
+
+        $('#btnSearch').click(function(e) {
+            e.preventDefault();
+            var key = $("#txtSearch").val();
+            if (key != "") {
+                $.ajax({
+                    url: "./includes/adminController.php",
+                    method: "POST",
+                    data: {
+                        key: key,
+                        searchUser: 1
+                    },
+                    success: function(response) {
+                        $('#user-list').html(response);
+                    }
+                });
+            }
+        });
+
+        $(document).delegate('.btnDelete', 'click', function(e) {
+            e.preventDefault();
+            var id = $(this).attr('data-id');
+            $.ajax({
+                url: "./includes/adminController.php",
+                method: "POST",
+                data: {
+                    id: id,
+                    deleteUser: 1
+                },
+                success: function(response) {
+                    alert(response);
+                    location.href = "./admin.php"
+                    // $('#user-list').html(response);
+                }
+            });
+        });
     </script>
 </body>
 
